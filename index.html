@@ -123,6 +123,38 @@ a{color:inherit}
 
 footer{margin-top:34px;text-align:center;font-size:12px;opacity:.5}
 
+
+.rsvp2{margin-top:30px;border-radius:28px;padding:28px 20px;text-align:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(16px);position:relative;overflow:visible}
+.rsvp2 h3{font-size:40px;font-weight:900}
+.rsvp2 p{opacity:.7;margin-top:4px}
+.rsvp2 input{margin-top:18px;width:100%;padding:15px 18px;border-radius:16px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.3);color:#fff;font:inherit;font-size:17px;text-align:center}
+.rsvp2 input::placeholder{color:rgba(255,255,255,.45)}
+.yn{margin-top:16px;display:flex;flex-direction:column;gap:12px;align-items:center;min-height:150px;position:relative}
+.yes{width:100%;padding:22px;border-radius:20px;font-weight:900;font-size:24px;color:#0b0718;background:linear-gradient(90deg,var(--amber),var(--pink),var(--violet),var(--amber));background-size:300% 100%;animation:shine 3s linear infinite;box-shadow:0 12px 40px rgba(255,62,154,.5)}
+.yes:active{transform:scale(.97)}
+.no{padding:12px 22px;border-radius:999px;font-weight:700;font-size:15px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+/* trip mode */
+.trip{position:fixed;inset:0;z-index:40;pointer-events:none;opacity:0;transition:opacity .4s;mix-blend-mode:screen;
+ background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,62,154,.55) 0 15deg,rgba(139,92,255,.5) 15deg 30deg,rgba(34,224,214,.5) 30deg 45deg,rgba(242,162,58,.55) 45deg 60deg)}
+.trip.on{opacity:.75;animation:tripspin 2.2s linear infinite}
+@keyframes tripspin{from{transform:rotate(0) scale(1.6)}to{transform:rotate(360deg) scale(1.6)}}
+.rings{position:fixed;inset:0;z-index:41;pointer-events:none;opacity:0;background:repeating-radial-gradient(circle at 50% 50%,transparent 0 30px,rgba(255,255,255,.18) 30px 36px);transition:opacity .4s}
+.rings.on{opacity:1;animation:zoom 1s linear infinite}
+@keyframes zoom{from{background-size:100% 100%}to{background-size:140% 140%}}
+body.tripping .invite,body.tripping .club{animation:hue 1.4s linear infinite}
+@keyframes hue{to{filter:hue-rotate(360deg) saturate(1.6)}}
+body.shake .invite{animation:hue 1.4s linear infinite,shake .5s ease-in-out 3}
+@keyframes shake{25%{transform:translate(-6px,3px) rotate(-1deg)}75%{transform:translate(6px,-3px) rotate(1deg)}}
+.boom{position:fixed;inset:0;z-index:55;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:24px;pointer-events:none;opacity:0;transform:scale(.4);transition:opacity .35s,transform .6s cubic-bezier(.2,1.6,.4,1)}
+.boom.on{opacity:1;transform:none;pointer-events:auto}
+.boom .big{font-weight:900;font-size:clamp(56px,17vw,110px);line-height:.95;color:#fff;text-shadow:0 0 20px var(--pink),0 0 60px var(--violet),6px 6px 0 var(--cyan),-6px -6px 0 var(--pink);animation:wobble 1.2s ease-in-out infinite}
+@keyframes wobble{50%{transform:rotate(-4deg) scale(1.06)}}
+.boom .sm{font-weight:800;font-size:22px;background:rgba(7,6,15,.75);padding:10px 20px;border-radius:999px}
+.boom .row2{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.boom .row2 a,.boom .row2 button{padding:13px 20px;border-radius:999px;font-weight:800;font-size:15px;background:#fff;color:#1a1230;text-decoration:none}
+.emo{position:fixed;z-index:52;pointer-events:none;font-size:42px;font-family:"Noto Color Emoji","Apple Color Emoji","Segoe UI Emoji",sans-serif;animation:fly 2.6s ease-out forwards}
+@keyframes fly{from{transform:translateY(0) rotate(0) scale(.6);opacity:1}to{transform:translateY(-110vh) rotate(720deg) scale(1.4);opacity:0}}
+.sorry{margin-top:14px;font-weight:700;color:var(--amber);min-height:22px}
 #confetti{position:fixed;inset:0;z-index:50;pointer-events:none}
 .mute{position:fixed;top:14px;left:14px;z-index:60;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);display:none;align-items:center;justify-content:center;backdrop-filter:blur(10px)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -136,6 +168,8 @@ footer{margin-top:34px;text-align:center;font-size:12px;opacity:.5}
  <div class="grain"></div>
 </div>
 <canvas id="confetti"></canvas>
+<div class="trip" id="trip"></div><div class="rings" id="rings"></div>
+<div class="boom" id="boom" role="dialog" aria-live="assertive"><div class="big" id="boomTxt">נתראה!!!</div><div class="sm" id="boomSm">חמישי · 21:00 · אצל ג'קובס</div><div class="row2"><a id="tellWa" href="#" target="_blank" rel="noopener">💬 תגיד בקבוצה</a><button type="button" id="closeBoom">סגור</button></div></div>
 
 <!-- envelope -->
 <section class="stage" id="stage">
@@ -197,17 +231,21 @@ footer{margin-top:34px;text-align:center;font-size:12px;opacity:.5}
  </div>
 
  <div class="actions reveal">
-  <a class="btn main" href="#rsvp">אישור הגעה ✋</a>
+  <a class="btn main" href="#rsvp">אישור הגעה 🔥</a>
   <a class="btn" id="calBtn" href="#" download="jacobs-night.ics">📅 ליומן</a>
   <a class="btn" id="waBtn" href="#" target="_blank" rel="noopener">💬 שתפו בוואטסאפ</a>
  </div>
 
  <div class="flyer reveal"><img src="flyer.png" alt="פלייר: אתם מוזמנים, באנו לתקן פותחים שולחן אצל ג'קובס, יום חמישי 19.11 בשעה 21:00" loading="lazy"></div>
 
- <section class="rsvp reveal" id="rsvp">
-  <h3>אישור הגעה</h3>
-  <p>שתי שניות, שנדע כמה בשר לשים על האש</p>
-  <iframe data-tally-src="https://tally.so/embed/Eql2JA?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" title="אישור הגעה – ערב אצל ג'קובס"></iframe>
+ <section class="rsvp2 reveal" id="rsvp">
+  <h3>מגיעים?</h3>
+  <p>לחיצה אחת וזהו</p>
+  <input id="nm" type="text" placeholder="השם שלך (לא חובה)" aria-label="השם שלך" autocomplete="given-name">
+  <div class="yn">
+   <button type="button" class="yes" id="yesBtn">כן, אני בא! 🔥</button>
+   <button type="button" class="no" id="noBtn">לא יכול 😢</button>
+  </div>
  </section>
 
  <footer>באנו לתקן · מחכים לכם! 🙌</footer>
@@ -231,7 +269,6 @@ footer{margin-top:34px;text-align:center;font-size:12px;opacity:.5}
    stage.classList.add('gone');
    invite.classList.add('show');
    window.scrollTo(0,0);
-   loadTally();
    observe();
    document.getElementById('again').style.display='flex';
    setTimeout(function(){ burst(180); },250);
@@ -251,16 +288,41 @@ footer{margin-top:34px;text-align:center;font-size:12px;opacity:.5}
   els.forEach(function(el,i){ el.style.transitionDelay=(Math.min(i,5)*80)+'ms'; io.observe(el); });
  }
 
- // tally
- function loadTally(){
-  var f=document.querySelector('iframe[data-tally-src]'); if(f && !f.src) f.src=f.getAttribute('data-tally-src');
-  var s=document.createElement('script'); s.src='https://tally.so/widgets/embed.js'; s.async=true;
-  s.onload=function(){ if(window.Tally) Tally.loadEmbeds(); };
-  document.body.appendChild(s);
- }
- window.addEventListener('message',function(e){
-  try{ if(typeof e.data==='string' && e.data.indexOf('Tally.FormSubmitted')>-1){ burst(300); rain(2500); } }catch(err){}
+
+ // RSVP (no backend)
+ var yes=document.getElementById('yesBtn'), no=document.getElementById('noBtn'), nm=document.getElementById('nm');
+ var trip=document.getElementById('trip'), rings=document.getElementById('rings'), boom=document.getElementById('boom');
+ try{ var saved=localStorage.getItem('jacobs_rsvp'); if(saved){ yes.textContent='אישרת! עוד פעם? 🔥'; } }catch(e){}
+ var EMO=['🔥','🥃','🍾','🍻','🥩','🎉','🪩','🌈','✨','😎','⚡','🍸','🎶','💥'];
+ function emojiStorm(n){ for(var i=0;i<n;i++){ (function(i){ setTimeout(function(){ var e=document.createElement('div'); e.className='emo'; e.textContent=EMO[Math.random()*EMO.length|0]; e.style.left=(Math.random()*92)+'vw'; e.style.top=(80+Math.random()*25)+'vh'; e.style.fontSize=(28+Math.random()*40)+'px'; e.style.animationDuration=(1.8+Math.random()*1.6)+'s'; document.body.appendChild(e); setTimeout(function(){e.remove()},3600); },i*45); })(i); } }
+ yes.addEventListener('click',function(){
+  var name=(nm.value||'').trim();
+  try{ localStorage.setItem('jacobs_rsvp',name||'yes'); }catch(e){}
+  document.getElementById('boomTxt').textContent = name ? (name+' בפנים!!!') : 'נתראה!!!';
+  var txt=(name?name+' ':'')+'מאשר הגעה 🔥 נתראה בחמישי ב־21:00 אצל ג\'קובס! 🥃🍻';
+  document.getElementById('tellWa').href='https://wa.me/?text='+encodeURIComponent(txt);
+  document.body.classList.add('tripping','shake');
+  trip.classList.add('on'); rings.classList.add('on'); boom.classList.add('on');
+  try{ if(navigator.vibrate) navigator.vibrate([80,60,80,60,200]); }catch(e){}
+  burst(400); setTimeout(function(){burst(300)},600); setTimeout(function(){burst(300)},1300);
+  rain(6000); emojiStorm(60);
+  setTimeout(function(){ document.body.classList.remove('shake'); },1600);
+  setTimeout(function(){ trip.classList.remove('on'); rings.classList.remove('on'); },5200);
+  setTimeout(function(){ document.body.classList.remove('tripping'); },6000);
+  yes.textContent='אישרת! עוד פעם? 🔥';
  });
+ document.getElementById('closeBoom').addEventListener('click',function(){ boom.classList.remove('on'); trip.classList.remove('on'); rings.classList.remove('on'); document.body.classList.remove('tripping'); });
+ var dodge=0, lines=['בטוח? 🤨','יש בשר על האש...','וויסקי על הקרח 🥃','הכל עלינו!!','אין מצב שאתה מפספס','טוב, תלחץ על הכפתור הגדול 👆'];
+ function run(e){
+  if(dodge>=lines.length){ return; }
+  if(e) e.preventDefault();
+  var x=(Math.random()-.5)*220, y=(Math.random()-.5)*90;
+  no.style.transform='translate('+x+'px,'+y+'px) rotate('+((Math.random()-.5)*30)+'deg)';
+  no.textContent=lines[dodge++];
+  yes.style.transform='scale('+(1+dodge*0.06)+')';
+ }
+ no.addEventListener('mouseenter',run); no.addEventListener('touchstart',run,{passive:false});
+ no.addEventListener('click',function(e){ if(dodge<lines.length){ run(e); return; } no.textContent='חבל 😢 אם תתחרט, הכפתור למעלה'; try{localStorage.setItem('jacobs_rsvp','no')}catch(err){} });
 
  // countdown
  function pad(n){return n<10?'0'+n:''+n}
